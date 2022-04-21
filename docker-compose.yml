@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+
+  db:
+    image: postgres
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: inside_test_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      PGDATA: /var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - postgres
+    restart: unless-stopped
+
+  app:
+    image: 32391443/inside_test_app
+    environment:
+      - DB_URL=jdbc:postgresql://db:5432/inside_test_db
+    ports:
+      - 8181:8181
+    networks:
+      - postgres
+    volumes:
+      - ./:/tmp
+
+networks:
+  postgres:
+    driver: bridge
+
+volumes:
+  postgres:
